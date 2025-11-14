@@ -364,7 +364,7 @@
 			};
 			name = Release;
 		};
-		18F805931EBC01 /* Debug */ = {
+		A7F3C8D21E9B4A10 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -394,7 +394,7 @@
 			};
 			name = Debug;
 		};
-		18F805931EBC02 /* Release */ = {
+		B8E4D9E32F0C5B21 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -439,8 +439,8 @@
 		18F805931EBC /* Build configuration list for PBXNativeTarget "SpaceMiningEmpire" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				18F805931EBC01 /* Debug */,
-				18F805931EBC02 /* Release */,
+				A7F3C8D21E9B4A10 /* Debug */,
+				B8E4D9E32F0C5B21 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
