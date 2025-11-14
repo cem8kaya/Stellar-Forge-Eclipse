@@ -10,64 +10,79 @@ struct GameView: View {
     // MARK: - Body
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Header Section
-            headerView
+        ZStack {
+            // Animated starfield background
+            StarfieldView()
 
-            // Tap Button
-            TapButton(viewModel: viewModel)
-                .frame(height: 280)
-                .background(Color.black)
+            VStack(spacing: 0) {
+                // Header Section
+                headerView
 
-            // Scrollable Content (Click Upgrades & Generators)
-            ScrollView {
-                LazyVStack(spacing: 16) {
-                    // Click Multiplier Upgrades Section
-                    if !viewModel.clickUpgrades.isEmpty {
+                // Tap Button
+                TapButton(viewModel: viewModel)
+                    .frame(height: 280)
+
+                // Scrollable Content (Click Upgrades & Generators)
+                ScrollView {
+                    LazyVStack(spacing: 16) {
+                        // Click Multiplier Upgrades Section
+                        if !viewModel.clickUpgrades.isEmpty {
+                            VStack(alignment: .leading, spacing: 12) {
+                                // Section Header
+                                HStack {
+                                    Image(systemName: "hand.tap.fill")
+                                        .foregroundColor(.yellow)
+                                    Text("Click Multipliers")
+                                        .font(.title3.bold())
+                                        .foregroundColor(.white)
+                                }
+                                .padding(.horizontal)
+                                .transition(.move(edge: .top).combined(with: .opacity))
+
+                                // Click Upgrades List
+                                ForEach(Array(viewModel.clickUpgrades.enumerated()), id: \.element.id) { index, upgrade in
+                                    ClickUpgradeRowView(upgrade: upgrade, viewModel: viewModel)
+                                        .padding(.horizontal)
+                                        .transition(.asymmetric(
+                                            insertion: .move(edge: .leading).combined(with: .opacity),
+                                            removal: .scale.combined(with: .opacity)
+                                        ))
+                                        .animation(.spring(response: 0.6, dampingFraction: 0.8).delay(Double(index) * 0.05), value: viewModel.clickUpgrades.count)
+                                }
+                            }
+                            .padding(.top)
+                        }
+
+                        // Generators Section
                         VStack(alignment: .leading, spacing: 12) {
                             // Section Header
                             HStack {
-                                Image(systemName: "hand.tap.fill")
-                                    .foregroundColor(.yellow)
-                                Text("Click Multipliers")
+                                Image(systemName: "gear")
+                                    .foregroundColor(.cyan)
+                                Text("Generators")
                                     .font(.title3.bold())
                                     .foregroundColor(.white)
                             }
                             .padding(.horizontal)
+                            .transition(.move(edge: .top).combined(with: .opacity))
 
-                            // Click Upgrades List
-                            ForEach(viewModel.clickUpgrades) { upgrade in
-                                ClickUpgradeRowView(upgrade: upgrade, viewModel: viewModel)
+                            // Generators List
+                            ForEach(Array(viewModel.generators.enumerated()), id: \.element.id) { index, generator in
+                                GeneratorRowView(generator: generator, viewModel: viewModel)
                                     .padding(.horizontal)
+                                    .transition(.asymmetric(
+                                        insertion: .move(edge: .trailing).combined(with: .opacity),
+                                        removal: .scale.combined(with: .opacity)
+                                    ))
+                                    .animation(.spring(response: 0.6, dampingFraction: 0.8).delay(Double(index) * 0.05), value: viewModel.generators.count)
                             }
                         }
                         .padding(.top)
                     }
-
-                    // Generators Section
-                    VStack(alignment: .leading, spacing: 12) {
-                        // Section Header
-                        HStack {
-                            Image(systemName: "gear")
-                                .foregroundColor(.cyan)
-                            Text("Generators")
-                                .font(.title3.bold())
-                                .foregroundColor(.white)
-                        }
-                        .padding(.horizontal)
-
-                        // Generators List
-                        ForEach(viewModel.generators) { generator in
-                            GeneratorRowView(generator: generator, viewModel: viewModel)
-                                .padding(.horizontal)
-                        }
-                    }
-                    .padding(.top)
+                    .padding(.bottom)
                 }
-                .padding(.bottom)
             }
         }
-        .background(Color.black)
         .foregroundColor(.white)
         .onChange(of: scenePhase) { oldPhase, newPhase in
             // Save game when app goes to background or becomes inactive
@@ -79,6 +94,8 @@ struct GameView: View {
             OfflineEarningsView(earnings: viewModel.offlineEarnings) {
                 viewModel.isShowingOfflineModal = false
             }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $viewModel.isShowingPrestigeModal) {
             PrestigeView(
@@ -94,6 +111,8 @@ struct GameView: View {
                     viewModel.isShowingPrestigeModal = false
                 }
             )
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $viewModel.isShowingAchievementsModal) {
             AchievementsView(
@@ -102,6 +121,8 @@ struct GameView: View {
                     viewModel.isShowingAchievementsModal = false
                 }
             )
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
         }
     }
 
@@ -166,15 +187,17 @@ struct GameView: View {
                 }
             }
 
-            // Credits display
+            // Credits display with animated counter
             VStack(spacing: 4) {
                 Text("Credits")
                     .font(.caption)
                     .foregroundColor(.secondary)
 
-                Text(viewModel.credits.formattedCredits)
-                    .font(.system(size: 42, weight: .bold, design: .rounded))
-                    .foregroundColor(.white)
+                NumberCounterView(
+                    value: viewModel.credits,
+                    font: .system(size: 42, weight: .bold, design: .rounded),
+                    foregroundColor: .white
+                )
             }
 
             // Production per second
