@@ -197,62 +197,42 @@ offlineEarnings = creditsPerSecond * min(timeSinceLastSave, 86400)
 - **iOS Deployment Target**: iOS 16.0 or later
 - **Swift**: 5.9 or later
 
-### Important Note
+### Quick Start
 
-This repository contains **source code only** and does **not include an Xcode project file** (`.xcodeproj`). You will need to create a new Xcode project to build and run the application.
+This repository includes a ready-to-use **Xcode project file** (`SpaceMiningEmpire.xcodeproj`). Simply clone and open!
 
 ### Setup Instructions
 
-#### Option 1: Create New Xcode Project
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/cem8kaya/Stellar-Forge-Eclipse.git
+   cd Stellar-Forge-Eclipse
+   ```
 
-1. **Open Xcode**
-2. **Create a new project**:
-   - Select **iOS** → **App**
-   - Product Name: `SpaceMiningEmpire` (or your preferred name)
-   - Interface: **SwiftUI**
-   - Language: **Swift**
-   - Save the project
+2. **Open in Xcode**:
+   - Double-click `SpaceMiningEmpire.xcodeproj` to open in Xcode
+   - Or from terminal: `open SpaceMiningEmpire.xcodeproj`
 
-3. **Add source files**:
-   - Delete the default `ContentView.swift` and app file
-   - Drag the entire `SpaceMiningEmpire` folder into your Xcode project
-   - Select **Copy items if needed**
-   - Ensure all `.swift` files are added to your target
+3. **Configure signing** (required for device deployment):
+   - In Xcode, select the project in the navigator
+   - Go to **Signing & Capabilities** tab
+   - Select your development team
+   - Xcode will automatically configure provisioning
 
-4. **Configure the project**:
-   - Set the bundle identifier
-   - Configure signing & capabilities
-   - Set deployment target to iOS 16.0+
-
-5. **Build and run**:
-   - Select a simulator or device
+4. **Build and run**:
+   - Select a simulator or connected device from the scheme menu
    - Press `Cmd + R` to build and run
+   - The app will launch automatically
 
-#### Option 2: Use Swift Package Manager (Advanced)
+### Project Configuration
 
-You can convert this to a Swift Package by creating a `Package.swift` file:
-
-```swift
-// swift-tools-version:5.9
-import PackageDescription
-
-let package = Package(
-    name: "SpaceMiningEmpire",
-    platforms: [.iOS(.v16)],
-    products: [
-        .library(
-            name: "SpaceMiningEmpire",
-            targets: ["SpaceMiningEmpire"]
-        ),
-    ],
-    targets: [
-        .target(
-            name: "SpaceMiningEmpire",
-            path: "SpaceMiningEmpire"
-        ),
-    ]
-)
-```
+The included Xcode project is pre-configured with:
+- **Bundle Identifier**: `com.spacemining.empire` (customize as needed)
+- **Deployment Target**: iOS 16.0+
+- **Swift Version**: 5.0
+- **All 23 source files** properly organized in groups
+- **Build configurations**: Debug and Release
+- **Supported devices**: iPhone and iPad (Universal)
 
 ### Building for iPhone Device
 
@@ -287,6 +267,7 @@ let package = Package(
 Stellar-Forge-Eclipse/
 ├── README.md                          # This file
 ├── LICENSE                            # MIT License
+├── SpaceMiningEmpire.xcodeproj/       # Xcode project (ready to open!)
 └── SpaceMiningEmpire/                 # Main application source
     ├── SpaceMiningEmpireApp.swift     # App entry point (@main)
     │
