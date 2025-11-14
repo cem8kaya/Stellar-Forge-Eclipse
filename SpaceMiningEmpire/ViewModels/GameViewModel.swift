@@ -30,6 +30,15 @@ class GameViewModel: ObservableObject {
     /// Array of all click/tap upgrades in the game
     @Published var clickUpgrades: [ClickUpgrade] = []
 
+    /// Total credits earned across all time (including resets)
+    @Published var totalCreditsEarned: Double = 0.0
+
+    /// Prestige manager that handles Stellar Shards and multipliers
+    @Published var prestigeManager: PrestigeManager = PrestigeManager()
+
+    /// Whether to show the prestige modal
+    @Published var isShowingPrestigeModal: Bool = false
+
     // MARK: - Private Properties
 
     /// Timer subscription for production updates
@@ -58,6 +67,34 @@ class GameViewModel: ObservableObject {
 
     /// Maximum offline time in seconds (24 hours)
     private let maxOfflineTime: TimeInterval = 86400
+
+    /// UserDefaults key for total credits earned
+    private let totalCreditsEarnedKey = "totalCreditsEarned"
+
+    /// UserDefaults key for prestige manager
+    private let prestigeManagerKey = "prestigeManager"
+
+    // MARK: - Computed Properties
+
+    /// Current Stellar Shards from prestige manager
+    var stellarShards: Int {
+        prestigeManager.stellarShards
+    }
+
+    /// Current prestige multiplier
+    var prestigeMultiplier: Double {
+        prestigeManager.prestigeMultiplier
+    }
+
+    /// Potential Stellar Shards that would be earned from prestiging now
+    var potentialStellarShards: Int {
+        PrestigeManager.calculateStellarShards(from: totalCreditsEarned)
+    }
+
+    /// Whether the player can prestige (has earned at least 1M total credits)
+    var canPrestige: Bool {
+        totalCreditsEarned >= 1_000_000
+    }
 
     // MARK: - Initialization
 
@@ -198,15 +235,21 @@ class GameViewModel: ObservableObject {
     /// Called every second to produce credits based on generators
     private func produce() {
         // Calculate total production per second
-        let totalProductionPerSecond = generators.reduce(0.0) { total, generator in
+        let baseProduction = generators.reduce(0.0) { total, generator in
             total + generator.currentProductionPerSecond
         }
+
+        // Apply prestige multiplier
+        let totalProductionPerSecond = baseProduction * prestigeMultiplier
 
         // Update published property for UI display
         self.totalCreditsPerSecond = totalProductionPerSecond
 
         // Add production to credits
         credits += totalProductionPerSecond
+
+        // Track total credits earned
+        totalCreditsEarned += totalProductionPerSecond
     }
 
     /// Levels up a generator if the player has enough credits
@@ -238,8 +281,14 @@ class GameViewModel: ObservableObject {
 
     /// Handles a manual tap/click on the tap button
     func handleTap() {
+        // Apply prestige multiplier to tap earnings
+        let earnedCredits = creditsPerTap * prestigeMultiplier
+
         // Add credits based on current tap multiplier
-        credits += creditsPerTap
+        credits += earnedCredits
+
+        // Track total credits earned
+        totalCreditsEarned += earnedCredits
 
         // Increment tap counter
         totalTaps += 1
@@ -279,6 +328,49 @@ class GameViewModel: ObservableObject {
         saveGame()
     }
 
+    /// Performs a prestige, resetting the game but awarding Stellar Shards
+    func prestige() {
+        // Calculate new shards to be earned
+        let newShards = potentialStellarShards
+
+        // Perform prestige in the manager
+        prestigeManager.performPrestige(newShards: newShards)
+
+        // Reset credits to 0
+        credits = 0.0
+
+        // Reset all generators to initial state
+        generators = generators.map { generator in
+            var reset = generator
+            // Keep first generator at level 1, rest at 0
+            reset.level = generator.name == "Mining Probe" ? 1 : 0
+            return reset
+        }
+
+        // Reset all click upgrades to locked state
+        clickUpgrades = clickUpgrades.map { upgrade in
+            var reset = upgrade
+            reset.level = 0
+            return reset
+        }
+
+        // Recalculate credits per tap (should reset to 1.0)
+        calculateCreditsPerTap()
+
+        // Reset tap counter
+        totalTaps = 0
+
+        // Keep totalCreditsEarned so player can prestige again
+        // (Don't reset this - it's cumulative across prestiges)
+
+        // Add strong haptic feedback for prestige
+        let impact = UIImpactFeedbackGenerator(style: .heavy)
+        impact.impactOccurred()
+
+        // Save the new game state
+        saveGame()
+    }
+
     // MARK: - Persistence Functions
 
     /// Saves the current game state to UserDefaults
@@ -289,6 +381,9 @@ class GameViewModel: ObservableObject {
         // Save tap statistics
         userDefaults.set(creditsPerTap, forKey: creditsPerTapKey)
         userDefaults.set(totalTaps, forKey: totalTapsKey)
+
+        // Save total credits earned
+        userDefaults.set(totalCreditsEarned, forKey: totalCreditsEarnedKey)
 
         // Encode and save generators
         do {
@@ -306,6 +401,14 @@ class GameViewModel: ObservableObject {
             print("Error encoding click upgrades: \(error)")
         }
 
+        // Encode and save prestige manager
+        do {
+            let encodedData = try JSONEncoder().encode(prestigeManager)
+            userDefaults.set(encodedData, forKey: prestigeManagerKey)
+        } catch {
+            print("Error encoding prestige manager: \(error)")
+        }
+
         // Save current timestamp
         userDefaults.set(Date().timeIntervalSince1970, forKey: lastSaveTimeKey)
     }
@@ -321,6 +424,9 @@ class GameViewModel: ObservableObject {
             creditsPerTap = 1.0 // Default value on first launch
         }
         totalTaps = userDefaults.integer(forKey: totalTapsKey)
+
+        // Load total credits earned
+        totalCreditsEarned = userDefaults.double(forKey: totalCreditsEarnedKey)
 
         // Load and decode generators
         if let savedData = userDefaults.data(forKey: generatorsKey) {
@@ -341,6 +447,16 @@ class GameViewModel: ObservableObject {
                 clickUpgrades = []
             }
         }
+
+        // Load and decode prestige manager
+        if let savedData = userDefaults.data(forKey: prestigeManagerKey) {
+            do {
+                prestigeManager = try JSONDecoder().decode(PrestigeManager.self, from: savedData)
+            } catch {
+                print("Error decoding prestige manager: \(error)")
+                prestigeManager = PrestigeManager()
+            }
+        }
     }
 
     /// Calculates credits earned while the app was closed
@@ -359,9 +475,12 @@ class GameViewModel: ObservableObject {
         timeDifference = min(timeDifference, maxOfflineTime)
 
         // Calculate total production from all generators
-        let totalProduction = generators.reduce(0.0) { total, generator in
+        let baseProduction = generators.reduce(0.0) { total, generator in
             total + generator.currentProductionPerSecond
         }
+
+        // Apply prestige multiplier to offline earnings
+        let totalProduction = baseProduction * prestigeMultiplier
 
         // Calculate earnings
         let earnings = totalProduction * timeDifference
@@ -370,6 +489,7 @@ class GameViewModel: ObservableObject {
         if earnings >= 1.0 {
             offlineEarnings = earnings
             credits += earnings
+            totalCreditsEarned += earnings
             isShowingOfflineModal = true
             saveGame()
         }
