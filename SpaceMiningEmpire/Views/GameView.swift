@@ -80,6 +80,21 @@ struct GameView: View {
                 viewModel.isShowingOfflineModal = false
             }
         }
+        .sheet(isPresented: $viewModel.isShowingPrestigeModal) {
+            PrestigeView(
+                currentShards: viewModel.stellarShards,
+                potentialShards: viewModel.potentialStellarShards,
+                currentMultiplier: viewModel.prestigeMultiplier,
+                newMultiplier: viewModel.prestigeManager.prestigeMultiplier + Double(viewModel.potentialStellarShards) * 0.1,
+                onPrestige: {
+                    viewModel.prestige()
+                    viewModel.isShowingPrestigeModal = false
+                },
+                onDismiss: {
+                    viewModel.isShowingPrestigeModal = false
+                }
+            )
+        }
     }
 
     // MARK: - Subviews
@@ -87,7 +102,7 @@ struct GameView: View {
     /// Header displaying app title, credits, and production rate
     private var headerView: some View {
         VStack(spacing: 12) {
-            // Title with space theme icon
+            // Title with space theme icon and prestige button
             HStack {
                 Image(systemName: "star.fill")
                     .foregroundColor(.yellow)
@@ -95,6 +110,31 @@ struct GameView: View {
                     .font(.title.bold())
                 Image(systemName: "star.fill")
                     .foregroundColor(.yellow)
+
+                // Prestige button (shows when player can prestige)
+                if viewModel.canPrestige {
+                    Button(action: {
+                        viewModel.isShowingPrestigeModal = true
+                    }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "sparkles")
+                            Text("Ascend")
+                        }
+                        .font(.caption.bold())
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(
+                            LinearGradient(
+                                colors: [.purple, .pink],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .cornerRadius(20)
+                        .shadow(color: .purple.opacity(0.5), radius: 8)
+                    }
+                }
             }
 
             // Credits display
@@ -115,6 +155,24 @@ struct GameView: View {
                 Text("\(viewModel.totalCreditsPerSecond.formattedCredits) credits/sec")
                     .font(.subheadline)
                     .foregroundColor(.green)
+            }
+
+            // Prestige multiplier (shows if player has any shards)
+            if viewModel.stellarShards > 0 {
+                HStack(spacing: 4) {
+                    Image(systemName: "diamond.fill")
+                        .foregroundColor(.cyan)
+                    Text("\(viewModel.stellarShards) Stellar Shards")
+                        .font(.caption)
+                        .foregroundColor(.cyan)
+                    Text("•")
+                        .foregroundColor(.secondary)
+                    Image(systemName: "sparkles")
+                        .foregroundColor(.purple)
+                    Text("\(viewModel.prestigeMultiplier, specifier: "%.1f")x multiplier")
+                        .font(.caption)
+                        .foregroundColor(.purple)
+                }
             }
         }
         .frame(maxWidth: .infinity)
