@@ -7,60 +7,60 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		FC817845A6D0 /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC62394073D3 /* Achievement.swift */; };
-		062453C3768E /* AchievementManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECE6D3D8C957 /* AchievementManager.swift */; };
-		6CDCEC0F9CB6 /* ClickUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5070C319CC8F /* ClickUpgrade.swift */; };
-		F3F5F31ADE04 /* Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D23C9C618DF /* Generator.swift */; };
-		43537D324E8A /* PrestigeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE212ACD84E /* PrestigeManager.swift */; };
-		A179B9C56F96 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182968A33959 /* Settings.swift */; };
-		61A173DAB8DC /* SpaceMiningEmpireApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CF989B3F50 /* SpaceMiningEmpireApp.swift */; };
-		E830A75206CE /* NumberFormatter+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662A3C81A8ED /* NumberFormatter+Extensions.swift */; };
-		BDEFA997BB90 /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F52476F6F /* GameViewModel.swift */; };
-		D18F14909FCB /* AchievementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB60BE28FCB /* AchievementsView.swift */; };
-		C82EAF11DC9C /* ClickUpgradeRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A896C12CE25 /* ClickUpgradeRowView.swift */; };
-		970BC4DB86D0 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7DD61BBC2EE /* GameView.swift */; };
-		56FD33BD06D5 /* GeneratorRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F81EFF8C5D9 /* GeneratorRowView.swift */; };
-		426DDE57A8FB /* NumberCounterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EE617D630FE /* NumberCounterView.swift */; };
-		19767CF3C16E /* OfflineEarningsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFE1A61D893D /* OfflineEarningsView.swift */; };
-		F904193DE32A /* PrestigeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5340A403A981 /* PrestigeView.swift */; };
-		A37216D175D0 /* PurchaseCelebrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AE50021CB3 /* PurchaseCelebrationView.swift */; };
-		FA68DAF208E7 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E50B03DF9DD /* SettingsView.swift */; };
-		E5071AADDD55 /* StarfieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24757AC0CF80 /* StarfieldView.swift */; };
-		D2A75972810F /* StatCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719E28F90DA7 /* StatCardView.swift */; };
-		AB779AC7639F /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D563BA970EA4 /* StatsView.swift */; };
-		4188B7E60CBD /* TapButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E4B7F9E12E /* TapButton.swift */; };
-		9FC9D4C51B80 /* TutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F01EC8C288 /* TutorialView.swift */; };
+		FC817845A6D0000000000000 /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC62394073D3000000000001 /* Achievement.swift */; };
+		062453C3768E000000000002 /* AchievementManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECE6D3D8C957000000000003 /* AchievementManager.swift */; };
+		6CDCEC0F9CB6000000000004 /* ClickUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5070C319CC8F000000000005 /* ClickUpgrade.swift */; };
+		F3F5F31ADE04000000000006 /* Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D23C9C618DF000000000007 /* Generator.swift */; };
+		43537D324E8A000000000008 /* PrestigeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE212ACD84E000000000009 /* PrestigeManager.swift */; };
+		A179B9C56F9600000000000A /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 182968A3395900000000000B /* Settings.swift */; };
+		61A173DAB8DC00000000000C /* SpaceMiningEmpireApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CF989B3F5000000000000D /* SpaceMiningEmpireApp.swift */; };
+		E830A75206CE00000000000E /* NumberFormatter+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662A3C81A8ED00000000000F /* NumberFormatter+Extensions.swift */; };
+		BDEFA997BB90000000000010 /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846F52476F6F000000000011 /* GameViewModel.swift */; };
+		D18F14909FCB000000000012 /* AchievementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB60BE28FCB000000000013 /* AchievementsView.swift */; };
+		C82EAF11DC9C000000000014 /* ClickUpgradeRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A896C12CE25000000000015 /* ClickUpgradeRowView.swift */; };
+		970BC4DB86D0000000000016 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7DD61BBC2EE000000000017 /* GameView.swift */; };
+		56FD33BD06D5000000000018 /* GeneratorRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F81EFF8C5D9000000000019 /* GeneratorRowView.swift */; };
+		426DDE57A8FB00000000001A /* NumberCounterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EE617D630FE00000000001B /* NumberCounterView.swift */; };
+		19767CF3C16E00000000001C /* OfflineEarningsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFE1A61D893D00000000001D /* OfflineEarningsView.swift */; };
+		F904193DE32A00000000001E /* PrestigeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5340A403A98100000000001F /* PrestigeView.swift */; };
+		A37216D175D0000000000020 /* PurchaseCelebrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AE50021CB3000000000021 /* PurchaseCelebrationView.swift */; };
+		FA68DAF208E7000000000022 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E50B03DF9DD000000000023 /* SettingsView.swift */; };
+		E5071AADDD55000000000024 /* StarfieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24757AC0CF80000000000025 /* StarfieldView.swift */; };
+		D2A75972810F000000000026 /* StatCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719E28F90DA7000000000027 /* StatCardView.swift */; };
+		AB779AC7639F000000000028 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D563BA970EA4000000000029 /* StatsView.swift */; };
+		4188B7E60CBD00000000002A /* TapButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E4B7F9E12E00000000002B /* TapButton.swift */; };
+		9FC9D4C51B8000000000002C /* TutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F01EC8C28800000000002D /* TutorialView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		B7B7E2C301FF /* SpaceMiningEmpire.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpaceMiningEmpire.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AC62394073D3 /* Achievement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievement.swift; sourceTree = "<group>"; };
-		ECE6D3D8C957 /* AchievementManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementManager.swift; sourceTree = "<group>"; };
-		5070C319CC8F /* ClickUpgrade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickUpgrade.swift; sourceTree = "<group>"; };
-		1D23C9C618DF /* Generator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Generator.swift; sourceTree = "<group>"; };
-		5AE212ACD84E /* PrestigeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrestigeManager.swift; sourceTree = "<group>"; };
-		182968A33959 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
-		48CF989B3F50 /* SpaceMiningEmpireApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceMiningEmpireApp.swift; sourceTree = "<group>"; };
-		662A3C81A8ED /* NumberFormatter+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberFormatter+Extensions.swift; sourceTree = "<group>"; };
-		846F52476F6F /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
-		1FB60BE28FCB /* AchievementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementsView.swift; sourceTree = "<group>"; };
-		4A896C12CE25 /* ClickUpgradeRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickUpgradeRowView.swift; sourceTree = "<group>"; };
-		E7DD61BBC2EE /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
-		7F81EFF8C5D9 /* GeneratorRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratorRowView.swift; sourceTree = "<group>"; };
-		7EE617D630FE /* NumberCounterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberCounterView.swift; sourceTree = "<group>"; };
-		AFE1A61D893D /* OfflineEarningsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineEarningsView.swift; sourceTree = "<group>"; };
-		5340A403A981 /* PrestigeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrestigeView.swift; sourceTree = "<group>"; };
-		57AE50021CB3 /* PurchaseCelebrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseCelebrationView.swift; sourceTree = "<group>"; };
-		7E50B03DF9DD /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		24757AC0CF80 /* StarfieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarfieldView.swift; sourceTree = "<group>"; };
-		719E28F90DA7 /* StatCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatCardView.swift; sourceTree = "<group>"; };
-		D563BA970EA4 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
-		11E4B7F9E12E /* TapButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapButton.swift; sourceTree = "<group>"; };
-		33F01EC8C288 /* TutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialView.swift; sourceTree = "<group>"; };
+		B7B7E2C301FF00000000002E /* SpaceMiningEmpire.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpaceMiningEmpire.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC62394073D3000000000001 /* Achievement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievement.swift; sourceTree = "<group>"; };
+		ECE6D3D8C957000000000003 /* AchievementManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementManager.swift; sourceTree = "<group>"; };
+		5070C319CC8F000000000005 /* ClickUpgrade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickUpgrade.swift; sourceTree = "<group>"; };
+		1D23C9C618DF000000000007 /* Generator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Generator.swift; sourceTree = "<group>"; };
+		5AE212ACD84E000000000009 /* PrestigeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrestigeManager.swift; sourceTree = "<group>"; };
+		182968A3395900000000000B /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
+		48CF989B3F5000000000000D /* SpaceMiningEmpireApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceMiningEmpireApp.swift; sourceTree = "<group>"; };
+		662A3C81A8ED00000000000F /* NumberFormatter+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberFormatter+Extensions.swift; sourceTree = "<group>"; };
+		846F52476F6F000000000011 /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
+		1FB60BE28FCB000000000013 /* AchievementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementsView.swift; sourceTree = "<group>"; };
+		4A896C12CE25000000000015 /* ClickUpgradeRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickUpgradeRowView.swift; sourceTree = "<group>"; };
+		E7DD61BBC2EE000000000017 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		7F81EFF8C5D9000000000019 /* GeneratorRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratorRowView.swift; sourceTree = "<group>"; };
+		7EE617D630FE00000000001B /* NumberCounterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberCounterView.swift; sourceTree = "<group>"; };
+		AFE1A61D893D00000000001D /* OfflineEarningsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineEarningsView.swift; sourceTree = "<group>"; };
+		5340A403A98100000000001F /* PrestigeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrestigeView.swift; sourceTree = "<group>"; };
+		57AE50021CB3000000000021 /* PurchaseCelebrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseCelebrationView.swift; sourceTree = "<group>"; };
+		7E50B03DF9DD000000000023 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		24757AC0CF80000000000025 /* StarfieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarfieldView.swift; sourceTree = "<group>"; };
+		719E28F90DA7000000000027 /* StatCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatCardView.swift; sourceTree = "<group>"; };
+		D563BA970EA4000000000029 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
+		11E4B7F9E12E00000000002B /* TapButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapButton.swift; sourceTree = "<group>"; };
+		33F01EC8C28800000000002D /* TutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		CBF83A5B644C /* Frameworks */ = {
+		CBF83A5B644C00000000002F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -70,80 +70,80 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		40E8E2C43F93 = {
+		40E8E2C43F93000000000030 = {
 			isa = PBXGroup;
 			children = (
-				6A2FB871B583 /* SpaceMiningEmpire */,
-				CCC6BDFE7B9B /* Products */,
+				6A2FB871B583000000000031 /* SpaceMiningEmpire */,
+				CCC6BDFE7B9B000000000032 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		CCC6BDFE7B9B /* Products */ = {
+		CCC6BDFE7B9B000000000032 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				B7B7E2C301FF /* SpaceMiningEmpire.app */,
+				B7B7E2C301FF00000000002E /* SpaceMiningEmpire.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		6A2FB871B583 /* SpaceMiningEmpire */ = {
+		6A2FB871B583000000000031 /* SpaceMiningEmpire */ = {
 			isa = PBXGroup;
 			children = (
-				48CF989B3F50 /* SpaceMiningEmpireApp.swift */,
-				4EA02D33814D /* Models */,
-				1B09ED8E8306 /* Utilities */,
-				232D8617D20F /* ViewModels */,
-				D5E1531DEF4C /* Views */,
+				48CF989B3F5000000000000D /* SpaceMiningEmpireApp.swift */,
+				4EA02D33814D000000000033 /* Models */,
+				1B09ED8E8306000000000034 /* Utilities */,
+				232D8617D20F000000000035 /* ViewModels */,
+				D5E1531DEF4C000000000036 /* Views */,
 			);
 			path = SpaceMiningEmpire;
 			sourceTree = "<group>";
 		};
-		4EA02D33814D /* Models */ = {
+		4EA02D33814D000000000033 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				AC62394073D3 /* Achievement.swift */,
-				ECE6D3D8C957 /* AchievementManager.swift */,
-				5070C319CC8F /* ClickUpgrade.swift */,
-				1D23C9C618DF /* Generator.swift */,
-				5AE212ACD84E /* PrestigeManager.swift */,
-				182968A33959 /* Settings.swift */,
+				AC62394073D3000000000001 /* Achievement.swift */,
+				ECE6D3D8C957000000000003 /* AchievementManager.swift */,
+				5070C319CC8F000000000005 /* ClickUpgrade.swift */,
+				1D23C9C618DF000000000007 /* Generator.swift */,
+				5AE212ACD84E000000000009 /* PrestigeManager.swift */,
+				182968A3395900000000000B /* Settings.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
 		};
-		1B09ED8E8306 /* Utilities */ = {
+		1B09ED8E8306000000000034 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				662A3C81A8ED /* NumberFormatter+Extensions.swift */,
+				662A3C81A8ED00000000000F /* NumberFormatter+Extensions.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
 		};
-		232D8617D20F /* ViewModels */ = {
+		232D8617D20F000000000035 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				846F52476F6F /* GameViewModel.swift */,
+				846F52476F6F000000000011 /* GameViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
 		};
-		D5E1531DEF4C /* Views */ = {
+		D5E1531DEF4C000000000036 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				1FB60BE28FCB /* AchievementsView.swift */,
-				4A896C12CE25 /* ClickUpgradeRowView.swift */,
-				E7DD61BBC2EE /* GameView.swift */,
-				7F81EFF8C5D9 /* GeneratorRowView.swift */,
-				7EE617D630FE /* NumberCounterView.swift */,
-				AFE1A61D893D /* OfflineEarningsView.swift */,
-				5340A403A981 /* PrestigeView.swift */,
-				57AE50021CB3 /* PurchaseCelebrationView.swift */,
-				7E50B03DF9DD /* SettingsView.swift */,
-				24757AC0CF80 /* StarfieldView.swift */,
-				719E28F90DA7 /* StatCardView.swift */,
-				D563BA970EA4 /* StatsView.swift */,
-				11E4B7F9E12E /* TapButton.swift */,
-				33F01EC8C288 /* TutorialView.swift */,
+				1FB60BE28FCB000000000013 /* AchievementsView.swift */,
+				4A896C12CE25000000000015 /* ClickUpgradeRowView.swift */,
+				E7DD61BBC2EE000000000017 /* GameView.swift */,
+				7F81EFF8C5D9000000000019 /* GeneratorRowView.swift */,
+				7EE617D630FE00000000001B /* NumberCounterView.swift */,
+				AFE1A61D893D00000000001D /* OfflineEarningsView.swift */,
+				5340A403A98100000000001F /* PrestigeView.swift */,
+				57AE50021CB3000000000021 /* PurchaseCelebrationView.swift */,
+				7E50B03DF9DD000000000023 /* SettingsView.swift */,
+				24757AC0CF80000000000025 /* StarfieldView.swift */,
+				719E28F90DA7000000000027 /* StatCardView.swift */,
+				D563BA970EA4000000000029 /* StatsView.swift */,
+				11E4B7F9E12E00000000002B /* TapButton.swift */,
+				33F01EC8C28800000000002D /* TutorialView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -151,13 +151,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2645224522E5 /* SpaceMiningEmpire */ = {
+		2645224522E5000000000037 /* SpaceMiningEmpire */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 18F805931EBC /* Build configuration list for PBXNativeTarget "SpaceMiningEmpire" */;
+			buildConfigurationList = 18F805931EBC000000000038 /* Build configuration list for PBXNativeTarget "SpaceMiningEmpire" */;
 			buildPhases = (
-				0E7A2B8215C7 /* Sources */,
-				CBF83A5B644C /* Frameworks */,
-				B90B08B77A39 /* Resources */,
+				0E7A2B8215C7000000000039 /* Sources */,
+				CBF83A5B644C00000000002F /* Frameworks */,
+				B90B08B77A3900000000003A /* Resources */,
 			);
 			buildRules = (
 			);
@@ -165,25 +165,25 @@
 			);
 			name = SpaceMiningEmpire;
 			productName = SpaceMiningEmpire;
-			productReference = B7B7E2C301FF /* SpaceMiningEmpire.app */;
+			productReference = B7B7E2C301FF00000000002E /* SpaceMiningEmpire.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		40E8E2C43F93 /* Project object */ = {
+		40E8E2C43F93000000000030 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					2645224522E5 = {
+					2645224522E5000000000037 = {
 						CreatedOnToolsVersion = 15.0;
 					};
 				};
 			};
-			buildConfigurationList = 1A23B94C4BDD /* Build configuration list for PBXProject "SpaceMiningEmpire" */;
+			buildConfigurationList = 1A23B94C4BDD00000000003B /* Build configuration list for PBXProject "SpaceMiningEmpire" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -191,18 +191,18 @@
 				en,
 				Base,
 			);
-			mainGroup = 40E8E2C43F93;
-			productRefGroup = CCC6BDFE7B9B /* Products */;
+			mainGroup = 40E8E2C43F93000000000030;
+			productRefGroup = CCC6BDFE7B9B000000000032 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				2645224522E5 /* SpaceMiningEmpire */,
+				2645224522E5000000000037 /* SpaceMiningEmpire */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		B90B08B77A39 /* Resources */ = {
+		B90B08B77A3900000000003A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -212,40 +212,40 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		0E7A2B8215C7 /* Sources */ = {
+		0E7A2B8215C7000000000039 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FC817845A6D0 /* Achievement.swift in Sources */,
-				062453C3768E /* AchievementManager.swift in Sources */,
-				6CDCEC0F9CB6 /* ClickUpgrade.swift in Sources */,
-				F3F5F31ADE04 /* Generator.swift in Sources */,
-				43537D324E8A /* PrestigeManager.swift in Sources */,
-				A179B9C56F96 /* Settings.swift in Sources */,
-				61A173DAB8DC /* SpaceMiningEmpireApp.swift in Sources */,
-				E830A75206CE /* NumberFormatter+Extensions.swift in Sources */,
-				BDEFA997BB90 /* GameViewModel.swift in Sources */,
-				D18F14909FCB /* AchievementsView.swift in Sources */,
-				C82EAF11DC9C /* ClickUpgradeRowView.swift in Sources */,
-				970BC4DB86D0 /* GameView.swift in Sources */,
-				56FD33BD06D5 /* GeneratorRowView.swift in Sources */,
-				426DDE57A8FB /* NumberCounterView.swift in Sources */,
-				19767CF3C16E /* OfflineEarningsView.swift in Sources */,
-				F904193DE32A /* PrestigeView.swift in Sources */,
-				A37216D175D0 /* PurchaseCelebrationView.swift in Sources */,
-				FA68DAF208E7 /* SettingsView.swift in Sources */,
-				E5071AADDD55 /* StarfieldView.swift in Sources */,
-				D2A75972810F /* StatCardView.swift in Sources */,
-				AB779AC7639F /* StatsView.swift in Sources */,
-				4188B7E60CBD /* TapButton.swift in Sources */,
-				9FC9D4C51B80 /* TutorialView.swift in Sources */,
+				FC817845A6D0000000000000 /* Achievement.swift in Sources */,
+				062453C3768E000000000002 /* AchievementManager.swift in Sources */,
+				6CDCEC0F9CB6000000000004 /* ClickUpgrade.swift in Sources */,
+				F3F5F31ADE04000000000006 /* Generator.swift in Sources */,
+				43537D324E8A000000000008 /* PrestigeManager.swift in Sources */,
+				A179B9C56F9600000000000A /* Settings.swift in Sources */,
+				61A173DAB8DC00000000000C /* SpaceMiningEmpireApp.swift in Sources */,
+				E830A75206CE00000000000E /* NumberFormatter+Extensions.swift in Sources */,
+				BDEFA997BB90000000000010 /* GameViewModel.swift in Sources */,
+				D18F14909FCB000000000012 /* AchievementsView.swift in Sources */,
+				C82EAF11DC9C000000000014 /* ClickUpgradeRowView.swift in Sources */,
+				970BC4DB86D0000000000016 /* GameView.swift in Sources */,
+				56FD33BD06D5000000000018 /* GeneratorRowView.swift in Sources */,
+				426DDE57A8FB00000000001A /* NumberCounterView.swift in Sources */,
+				19767CF3C16E00000000001C /* OfflineEarningsView.swift in Sources */,
+				F904193DE32A00000000001E /* PrestigeView.swift in Sources */,
+				A37216D175D0000000000020 /* PurchaseCelebrationView.swift in Sources */,
+				FA68DAF208E7000000000022 /* SettingsView.swift in Sources */,
+				E5071AADDD55000000000024 /* StarfieldView.swift in Sources */,
+				D2A75972810F000000000026 /* StatCardView.swift in Sources */,
+				AB779AC7639F000000000028 /* StatsView.swift in Sources */,
+				4188B7E60CBD00000000002A /* TapButton.swift in Sources */,
+				9FC9D4C51B8000000000002C /* TutorialView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		C27FBB9B4CE2 /* Debug */ = {
+		C27FBB9B4CE200000000003C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -308,7 +308,7 @@
 			};
 			name = Debug;
 		};
-		71E9A44F976F /* Release */ = {
+		71E9A44F976F00000000003D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -427,16 +427,16 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1A23B94C4BDD /* Build configuration list for PBXProject "SpaceMiningEmpire" */ = {
+		1A23B94C4BDD00000000003B /* Build configuration list for PBXProject "SpaceMiningEmpire" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C27FBB9B4CE2 /* Debug */,
-				71E9A44F976F /* Release */,
+				C27FBB9B4CE200000000003C /* Debug */,
+				71E9A44F976F00000000003D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		18F805931EBC /* Build configuration list for PBXNativeTarget "SpaceMiningEmpire" */ = {
+		18F805931EBC000000000038 /* Build configuration list for PBXNativeTarget "SpaceMiningEmpire" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A7F3C8D21E9B4A10 /* Debug */,
@@ -447,5 +447,5 @@
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 40E8E2C43F93 /* Project object */;
+	rootObject = 40E8E2C43F93000000000030 /* Project object */;
 }
