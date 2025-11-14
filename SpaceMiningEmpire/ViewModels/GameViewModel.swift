@@ -39,6 +39,15 @@ class GameViewModel: ObservableObject {
     /// Whether to show the prestige modal
     @Published var isShowingPrestigeModal: Bool = false
 
+    /// Achievement manager that handles all achievements
+    @Published var achievementManager: AchievementManager = AchievementManager()
+
+    /// Whether to show the achievements modal
+    @Published var isShowingAchievementsModal: Bool = false
+
+    /// Recently unlocked achievements (for displaying notifications)
+    @Published var recentlyUnlockedAchievements: [Achievement] = []
+
     // MARK: - Private Properties
 
     /// Timer subscription for production updates
@@ -74,6 +83,9 @@ class GameViewModel: ObservableObject {
     /// UserDefaults key for prestige manager
     private let prestigeManagerKey = "prestigeManager"
 
+    /// UserDefaults key for achievement manager
+    private let achievementManagerKey = "achievementManager"
+
     // MARK: - Computed Properties
 
     /// Current Stellar Shards from prestige manager
@@ -94,6 +106,16 @@ class GameViewModel: ObservableObject {
     /// Whether the player can prestige (has earned at least 1M total credits)
     var canPrestige: Bool {
         totalCreditsEarned >= 1_000_000
+    }
+
+    /// Total achievement multiplier from all unlocked achievements
+    var achievementMultiplier: Double {
+        achievementManager.totalAchievementMultiplier
+    }
+
+    /// Combined multiplier from prestige and achievements
+    var totalMultiplier: Double {
+        prestigeMultiplier * achievementMultiplier
     }
 
     // MARK: - Initialization
@@ -239,8 +261,8 @@ class GameViewModel: ObservableObject {
             total + generator.currentProductionPerSecond
         }
 
-        // Apply prestige multiplier
-        let totalProductionPerSecond = baseProduction * prestigeMultiplier
+        // Apply prestige and achievement multipliers
+        let totalProductionPerSecond = baseProduction * totalMultiplier
 
         // Update published property for UI display
         self.totalCreditsPerSecond = totalProductionPerSecond
@@ -250,6 +272,9 @@ class GameViewModel: ObservableObject {
 
         // Track total credits earned
         totalCreditsEarned += totalProductionPerSecond
+
+        // Check achievements
+        checkAndUnlockAchievements()
     }
 
     /// Levels up a generator if the player has enough credits
@@ -281,8 +306,8 @@ class GameViewModel: ObservableObject {
 
     /// Handles a manual tap/click on the tap button
     func handleTap() {
-        // Apply prestige multiplier to tap earnings
-        let earnedCredits = creditsPerTap * prestigeMultiplier
+        // Apply prestige and achievement multipliers to tap earnings
+        let earnedCredits = creditsPerTap * totalMultiplier
 
         // Add credits based on current tap multiplier
         credits += earnedCredits
@@ -296,6 +321,9 @@ class GameViewModel: ObservableObject {
         // Add haptic feedback
         let impact = UIImpactFeedbackGenerator(style: .light)
         impact.impactOccurred()
+
+        // Check achievements
+        checkAndUnlockAchievements()
     }
 
     /// Levels up a click upgrade if the player has enough credits
@@ -369,6 +397,35 @@ class GameViewModel: ObservableObject {
 
         // Save the new game state
         saveGame()
+
+        // Check achievements after prestige
+        checkAndUnlockAchievements()
+    }
+
+    /// Checks all achievements and unlocks any that meet requirements
+    private func checkAndUnlockAchievements() {
+        let newlyUnlocked = achievementManager.checkAchievements(
+            credits: credits,
+            totalCreditsEarned: totalCreditsEarned,
+            generators: generators,
+            taps: totalTaps,
+            prestigeCount: prestigeManager.lifetimePrestigeCount,
+            stellarShards: stellarShards,
+            clickUpgrades: clickUpgrades,
+            creditsPerSecond: totalCreditsPerSecond
+        )
+
+        // If achievements were unlocked, show notifications
+        if !newlyUnlocked.isEmpty {
+            recentlyUnlockedAchievements.append(contentsOf: newlyUnlocked)
+
+            // Add haptic feedback for achievement unlock
+            let impact = UIImpactFeedbackGenerator(style: .medium)
+            impact.impactOccurred()
+
+            // Save the updated achievement state
+            saveGame()
+        }
     }
 
     // MARK: - Persistence Functions
@@ -407,6 +464,14 @@ class GameViewModel: ObservableObject {
             userDefaults.set(encodedData, forKey: prestigeManagerKey)
         } catch {
             print("Error encoding prestige manager: \(error)")
+        }
+
+        // Encode and save achievement manager
+        do {
+            let encodedData = try JSONEncoder().encode(achievementManager)
+            userDefaults.set(encodedData, forKey: achievementManagerKey)
+        } catch {
+            print("Error encoding achievement manager: \(error)")
         }
 
         // Save current timestamp
@@ -457,6 +522,16 @@ class GameViewModel: ObservableObject {
                 prestigeManager = PrestigeManager()
             }
         }
+
+        // Load and decode achievement manager
+        if let savedData = userDefaults.data(forKey: achievementManagerKey) {
+            do {
+                achievementManager = try JSONDecoder().decode(AchievementManager.self, from: savedData)
+            } catch {
+                print("Error decoding achievement manager: \(error)")
+                achievementManager = AchievementManager()
+            }
+        }
     }
 
     /// Calculates credits earned while the app was closed
@@ -479,8 +554,8 @@ class GameViewModel: ObservableObject {
             total + generator.currentProductionPerSecond
         }
 
-        // Apply prestige multiplier to offline earnings
-        let totalProduction = baseProduction * prestigeMultiplier
+        // Apply prestige and achievement multipliers to offline earnings
+        let totalProduction = baseProduction * totalMultiplier
 
         // Calculate earnings
         let earnings = totalProduction * timeDifference
