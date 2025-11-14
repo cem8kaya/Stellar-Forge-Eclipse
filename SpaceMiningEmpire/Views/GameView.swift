@@ -6,6 +6,8 @@ struct GameView: View {
 
     @StateObject private var viewModel = GameViewModel()
     @Environment(\.scenePhase) private var scenePhase
+    @State private var isShowingSettings = false
+    @State private var isShowingTutorial = false
 
     // MARK: - Body
 
@@ -129,6 +131,27 @@ struct GameView: View {
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
         }
+        .sheet(isPresented: $isShowingSettings) {
+            SettingsView()
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $isShowingTutorial) {
+            TutorialView(onDismiss: {
+                isShowingTutorial = false
+            })
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
+        }
+        .onAppear {
+            // Show tutorial on first launch
+            if viewModel.settings.showTutorial {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    isShowingTutorial = true
+                    viewModel.settings.showTutorial = false
+                }
+            }
+        }
     }
 
     // MARK: - Subviews
@@ -174,6 +197,21 @@ struct GameView: View {
                     }
                 }
 
+                // Settings button
+                Button(action: {
+                    isShowingSettings = true
+                }) {
+                    Image(systemName: "gearshape.fill")
+                        .font(.title3)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.gray, .white],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                }
+
                 Image(systemName: "star.fill")
                     .foregroundColor(.yellow)
                 Text("Space Mining Empire")
@@ -181,7 +219,16 @@ struct GameView: View {
                 Image(systemName: "star.fill")
                     .foregroundColor(.yellow)
 
-                // Prestige button (shows when player can prestige)
+                // Help/Tutorial button
+                Button(action: {
+                    isShowingTutorial = true
+                }) {
+                    Image(systemName: "questionmark.circle.fill")
+                        .font(.title3)
+                        .foregroundColor(.orange)
+                }
+
+                // Quick Prestige button (shows when player can prestige)
                 if viewModel.canPrestige {
                     Button(action: {
                         viewModel.isShowingPrestigeModal = true
