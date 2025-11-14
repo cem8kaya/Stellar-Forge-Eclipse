@@ -2,6 +2,34 @@ import Foundation
 import Combine
 import UIKit
 
+/// Data point for production history chart
+struct ProductionDataPoint: Codable, Identifiable {
+    let id: UUID
+    let timestamp: Date
+    let creditsPerSecond: Double
+
+    init(timestamp: Date, creditsPerSecond: Double) {
+        self.id = UUID()
+        self.timestamp = timestamp
+        self.creditsPerSecond = creditsPerSecond
+    }
+}
+
+/// Daily activity data for heatmap
+struct DailyActivityData: Codable, Identifiable {
+    let id: UUID
+    let date: Date
+    let tapCount: Int
+    let creditsEarned: Double
+
+    init(date: Date, tapCount: Int, creditsEarned: Double) {
+        self.id = UUID()
+        self.date = date
+        self.tapCount = tapCount
+        self.creditsEarned = creditsEarned
+    }
+}
+
 /// ViewModel that manages the game state, generators, credits, and persistence
 class GameViewModel: ObservableObject {
     // MARK: - Published Properties
@@ -48,6 +76,33 @@ class GameViewModel: ObservableObject {
     /// Recently unlocked achievements (for displaying notifications)
     @Published var recentlyUnlockedAchievements: [Achievement] = []
 
+    /// Whether to show the statistics modal
+    @Published var isShowingStatsModal: Bool = false
+
+    /// Total time played in seconds
+    @Published var totalTimePlayed: TimeInterval = 0.0
+
+    /// Peak credits per second achieved
+    @Published var peakCreditsPerSecond: Double = 0.0
+
+    /// Session start time
+    @Published var sessionStartTime: Date = Date()
+
+    /// Session start credits
+    @Published var sessionStartCredits: Double = 0.0
+
+    /// Session taps
+    @Published var sessionTaps: Int = 0
+
+    /// Production history data points (time: timestamp, value: CPS)
+    @Published var productionHistory: [ProductionDataPoint] = []
+
+    /// Total upgrades purchased (generators + click upgrades)
+    @Published var totalUpgradesPurchased: Int = 0
+
+    /// Daily activity data (date: day identifier, taps: tap count)
+    @Published var dailyActivity: [DailyActivityData] = []
+
     // MARK: - Private Properties
 
     /// Timer subscription for production updates
@@ -86,6 +141,27 @@ class GameViewModel: ObservableObject {
     /// UserDefaults key for achievement manager
     private let achievementManagerKey = "achievementManager"
 
+    /// UserDefaults key for total time played
+    private let totalTimePlayedKey = "totalTimePlayed"
+
+    /// UserDefaults key for peak credits per second
+    private let peakCreditsPerSecondKey = "peakCreditsPerSecond"
+
+    /// UserDefaults key for production history
+    private let productionHistoryKey = "productionHistory"
+
+    /// UserDefaults key for total upgrades purchased
+    private let totalUpgradesPurchasedKey = "totalUpgradesPurchased"
+
+    /// UserDefaults key for daily activity
+    private let dailyActivityKey = "dailyActivity"
+
+    /// Timer for tracking session time
+    private var timeTrackingTimer: AnyCancellable?
+
+    /// Maximum number of production history points to keep (last 60 data points = 1 hour at 1-minute intervals)
+    private let maxProductionHistoryPoints = 60
+
     // MARK: - Computed Properties
 
     /// Current Stellar Shards from prestige manager
@@ -118,6 +194,31 @@ class GameViewModel: ObservableObject {
         prestigeMultiplier * achievementMultiplier
     }
 
+    /// Most valuable generator (by production)
+    var mostValuableGenerator: Generator? {
+        generators.max { a, b in
+            a.currentProductionPerSecond < b.currentProductionPerSecond
+        }
+    }
+
+    /// Total session time in seconds
+    var sessionTimePlayed: TimeInterval {
+        Date().timeIntervalSince(sessionStartTime)
+    }
+
+    /// Session credits earned
+    var sessionCreditsEarned: Double {
+        totalCreditsEarned - sessionStartCredits
+    }
+
+    /// Achievement completion percentage
+    var achievementCompletionPercentage: Double {
+        let total = Double(achievementManager.achievements.count)
+        guard total > 0 else { return 0 }
+        let unlocked = Double(achievementManager.unlockedCount)
+        return (unlocked / total) * 100
+    }
+
     // MARK: - Initialization
 
     init() {
@@ -127,6 +228,61 @@ class GameViewModel: ObservableObject {
         calculateCreditsPerTap()
         calculateOfflineEarnings()
         startProduction()
+        startTimeTracking()
+        initializeSession()
+    }
+
+    /// Initializes session tracking variables
+    private func initializeSession() {
+        sessionStartTime = Date()
+        sessionStartCredits = totalCreditsEarned
+        sessionTaps = 0
+    }
+
+    /// Starts the time tracking timer that updates total time played
+    private func startTimeTracking() {
+        // Update time played every minute
+        timeTrackingTimer = Timer.publish(every: 60.0, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                self.totalTimePlayed += 60.0
+                self.updateDailyActivity()
+                self.saveGame()
+            }
+    }
+
+    /// Updates daily activity tracking
+    private func updateDailyActivity() {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+
+        // Find or create today's activity data
+        if let index = dailyActivity.firstIndex(where: {
+            calendar.isDate($0.date, inSameDayAs: today)
+        }) {
+            // Update existing entry
+            var activity = dailyActivity[index]
+            activity = DailyActivityData(
+                date: activity.date,
+                tapCount: activity.tapCount + sessionTaps,
+                creditsEarned: activity.creditsEarned + sessionCreditsEarned
+            )
+            dailyActivity[index] = activity
+        } else {
+            // Create new entry
+            let newActivity = DailyActivityData(
+                date: today,
+                tapCount: sessionTaps,
+                creditsEarned: sessionCreditsEarned
+            )
+            dailyActivity.append(newActivity)
+        }
+
+        // Keep only last 30 days
+        if dailyActivity.count > 30 {
+            dailyActivity = Array(dailyActivity.suffix(30))
+        }
     }
 
     // MARK: - Core Functions
@@ -267,6 +423,14 @@ class GameViewModel: ObservableObject {
         // Update published property for UI display
         self.totalCreditsPerSecond = totalProductionPerSecond
 
+        // Track peak CPS
+        if totalProductionPerSecond > peakCreditsPerSecond {
+            peakCreditsPerSecond = totalProductionPerSecond
+        }
+
+        // Update production history every 60 seconds
+        updateProductionHistory(totalProductionPerSecond)
+
         // Add production to credits
         credits += totalProductionPerSecond
 
@@ -275,6 +439,29 @@ class GameViewModel: ObservableObject {
 
         // Check achievements
         checkAndUnlockAchievements()
+    }
+
+    /// Production history update counter
+    private var productionHistoryUpdateCounter = 0
+
+    /// Updates production history data points
+    private func updateProductionHistory(_ cps: Double) {
+        productionHistoryUpdateCounter += 1
+
+        // Record a data point every 60 seconds (60 ticks)
+        guard productionHistoryUpdateCounter >= 60 else { return }
+        productionHistoryUpdateCounter = 0
+
+        let dataPoint = ProductionDataPoint(
+            timestamp: Date(),
+            creditsPerSecond: cps
+        )
+        productionHistory.append(dataPoint)
+
+        // Keep only the last maxProductionHistoryPoints
+        if productionHistory.count > maxProductionHistoryPoints {
+            productionHistory.removeFirst()
+        }
     }
 
     /// Levels up a generator if the player has enough credits
@@ -295,6 +482,9 @@ class GameViewModel: ObservableObject {
         // Deduct cost and level up
         credits -= cost
         generators[index].level += 1
+
+        // Track upgrade purchase
+        totalUpgradesPurchased += 1
 
         // Add haptic feedback
         let impact = UIImpactFeedbackGenerator(style: .medium)
@@ -317,6 +507,7 @@ class GameViewModel: ObservableObject {
 
         // Increment tap counter
         totalTaps += 1
+        sessionTaps += 1
 
         // Add haptic feedback
         let impact = UIImpactFeedbackGenerator(style: .light)
@@ -344,6 +535,9 @@ class GameViewModel: ObservableObject {
         // Deduct cost and level up
         credits -= cost
         clickUpgrades[index].level += 1
+
+        // Track upgrade purchase
+        totalUpgradesPurchased += 1
 
         // Recalculate credits per tap
         calculateCreditsPerTap()
@@ -474,6 +668,27 @@ class GameViewModel: ObservableObject {
             print("Error encoding achievement manager: \(error)")
         }
 
+        // Save statistics
+        userDefaults.set(totalTimePlayed, forKey: totalTimePlayedKey)
+        userDefaults.set(peakCreditsPerSecond, forKey: peakCreditsPerSecondKey)
+        userDefaults.set(totalUpgradesPurchased, forKey: totalUpgradesPurchasedKey)
+
+        // Encode and save production history
+        do {
+            let encodedData = try JSONEncoder().encode(productionHistory)
+            userDefaults.set(encodedData, forKey: productionHistoryKey)
+        } catch {
+            print("Error encoding production history: \(error)")
+        }
+
+        // Encode and save daily activity
+        do {
+            let encodedData = try JSONEncoder().encode(dailyActivity)
+            userDefaults.set(encodedData, forKey: dailyActivityKey)
+        } catch {
+            print("Error encoding daily activity: \(error)")
+        }
+
         // Save current timestamp
         userDefaults.set(Date().timeIntervalSince1970, forKey: lastSaveTimeKey)
     }
@@ -532,6 +747,31 @@ class GameViewModel: ObservableObject {
                 achievementManager = AchievementManager()
             }
         }
+
+        // Load statistics
+        totalTimePlayed = userDefaults.double(forKey: totalTimePlayedKey)
+        peakCreditsPerSecond = userDefaults.double(forKey: peakCreditsPerSecondKey)
+        totalUpgradesPurchased = userDefaults.integer(forKey: totalUpgradesPurchasedKey)
+
+        // Load and decode production history
+        if let savedData = userDefaults.data(forKey: productionHistoryKey) {
+            do {
+                productionHistory = try JSONDecoder().decode([ProductionDataPoint].self, from: savedData)
+            } catch {
+                print("Error decoding production history: \(error)")
+                productionHistory = []
+            }
+        }
+
+        // Load and decode daily activity
+        if let savedData = userDefaults.data(forKey: dailyActivityKey) {
+            do {
+                dailyActivity = try JSONDecoder().decode([DailyActivityData].self, from: savedData)
+            } catch {
+                print("Error decoding daily activity: \(error)")
+                dailyActivity = []
+            }
+        }
     }
 
     /// Calculates credits earned while the app was closed
@@ -574,5 +814,6 @@ class GameViewModel: ObservableObject {
 
     deinit {
         timer?.cancel()
+        timeTrackingTimer?.cancel()
     }
 }

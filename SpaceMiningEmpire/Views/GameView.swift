@@ -124,6 +124,11 @@ struct GameView: View {
             .presentationDetents([.large])
             .presentationDragIndicator(.visible)
         }
+        .sheet(isPresented: $viewModel.isShowingStatsModal) {
+            StatsView(viewModel: viewModel)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+        }
     }
 
     // MARK: - Subviews
@@ -133,6 +138,21 @@ struct GameView: View {
         VStack(spacing: 12) {
             // Title with space theme icon and action buttons
             HStack(spacing: 12) {
+                // Statistics button
+                Button(action: {
+                    viewModel.isShowingStatsModal = true
+                }) {
+                    Image(systemName: "chart.bar.fill")
+                        .font(.title3)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.cyan, .blue],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                }
+
                 // Achievements button
                 Button(action: {
                     viewModel.isShowingAchievementsModal = true
