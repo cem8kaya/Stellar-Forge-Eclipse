@@ -7,19 +7,40 @@ struct ClickUpgradeRowView: View {
     let upgrade: ClickUpgrade
     @ObservedObject var viewModel: GameViewModel
 
+    @State private var isPulsing = false
+    @State private var celebrationTriggered = false
+    @State private var iconScale: CGFloat = 1.0
+
+    private var isAffordable: Bool {
+        viewModel.credits >= upgrade.nextLevelCost
+    }
+
     // MARK: - Body
 
     var body: some View {
         HStack {
             // Left: Icon + Info
             HStack(spacing: 12) {
-                // Upgrade Icon
-                Image(systemName: upgrade.iconName)
-                    .font(.title2)
-                    .foregroundColor(.yellow)
-                    .frame(width: 40, height: 40)
-                    .background(Color.yellow.opacity(0.2))
-                    .cornerRadius(8)
+                // Upgrade Icon with animations
+                ZStack {
+                    // Background glow for active upgrades
+                    if upgrade.level > 0 {
+                        Circle()
+                            .fill(Color.yellow.opacity(0.3))
+                            .frame(width: 50, height: 50)
+                            .blur(radius: 8)
+                            .scaleEffect(isPulsing ? 1.2 : 1.0)
+                            .opacity(isPulsing ? 0.8 : 0.5)
+                    }
+
+                    Image(systemName: upgrade.iconName)
+                        .font(.title2)
+                        .foregroundColor(.yellow)
+                        .frame(width: 40, height: 40)
+                        .background(Color.yellow.opacity(0.2))
+                        .cornerRadius(8)
+                        .scaleEffect(iconScale)
+                }
 
                 // Upgrade Info
                 VStack(alignment: .leading, spacing: 4) {
@@ -53,6 +74,21 @@ struct ClickUpgradeRowView: View {
         .padding()
         .background(Color.gray.opacity(0.1))
         .cornerRadius(12)
+        .celebration(isTriggered: $celebrationTriggered, color: .yellow)
+        .scaleEffect(celebrationTriggered ? 1.05 : 1.0)
+        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: celebrationTriggered)
+        .onAppear {
+            startAnimations()
+        }
+        .onChange(of: isAffordable) { oldValue, newValue in
+            if newValue {
+                withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
+                    isPulsing = true
+                }
+            } else {
+                isPulsing = false
+            }
+        }
     }
 
     // MARK: - Subviews
@@ -61,6 +97,7 @@ struct ClickUpgradeRowView: View {
     private var levelUpButton: some View {
         Button(action: {
             viewModel.levelUpClickUpgrade(upgradeID: upgrade.id)
+            triggerCelebration()
         }) {
             VStack(spacing: 2) {
                 Text(upgrade.level == 0 ? "UNLOCK" : "UPGRADE")
@@ -72,13 +109,44 @@ struct ClickUpgradeRowView: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
             .background(
-                viewModel.credits >= upgrade.nextLevelCost
-                    ? Color.orange
-                    : Color.gray
+                isAffordable
+                    ? LinearGradient(
+                        colors: [.orange, .yellow],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                    : LinearGradient(
+                        colors: [.gray, .gray],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
             )
             .cornerRadius(8)
+            .shadow(color: isAffordable ? .yellow.opacity(0.5) : .clear, radius: isPulsing ? 8 : 0)
         }
-        .disabled(viewModel.credits < upgrade.nextLevelCost)
+        .disabled(!isAffordable)
+    }
+
+    // MARK: - Helpers
+
+    private func startAnimations() {
+        // Pulse icon for active upgrades
+        if upgrade.level > 0 {
+            withAnimation(.easeInOut(duration: 2).repeatForever(autoreverses: true)) {
+                iconScale = 1.1
+            }
+        }
+
+        // Start pulse animation if affordable
+        if isAffordable {
+            withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
+                isPulsing = true
+            }
+        }
+    }
+
+    private func triggerCelebration() {
+        celebrationTriggered = true
     }
 }
 
