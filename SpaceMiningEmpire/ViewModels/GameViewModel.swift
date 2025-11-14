@@ -21,6 +21,15 @@ class GameViewModel: ObservableObject {
     /// Total credits produced per second (for UI display)
     @Published var totalCreditsPerSecond: Double = 0.0
 
+    /// Credits earned per manual tap
+    @Published var creditsPerTap: Double = 1.0
+
+    /// Total number of taps performed (for statistics)
+    @Published var totalTaps: Int = 0
+
+    /// Array of all click/tap upgrades in the game
+    @Published var clickUpgrades: [ClickUpgrade] = []
+
     // MARK: - Private Properties
 
     /// Timer subscription for production updates
@@ -38,6 +47,15 @@ class GameViewModel: ObservableObject {
     /// UserDefaults key for last save timestamp
     private let lastSaveTimeKey = "lastAppCloseTime"
 
+    /// UserDefaults key for credits per tap
+    private let creditsPerTapKey = "creditsPerTap"
+
+    /// UserDefaults key for total taps
+    private let totalTapsKey = "totalTaps"
+
+    /// UserDefaults key for saved click upgrades array
+    private let clickUpgradesKey = "savedClickUpgrades"
+
     /// Maximum offline time in seconds (24 hours)
     private let maxOfflineTime: TimeInterval = 86400
 
@@ -46,6 +64,8 @@ class GameViewModel: ObservableObject {
     init() {
         loadGame()
         initializeGenerators()
+        initializeClickUpgrades()
+        calculateCreditsPerTap()
         calculateOfflineEarnings()
         startProduction()
     }
@@ -106,6 +126,66 @@ class GameViewModel: ObservableObject {
         saveGame()
     }
 
+    /// Initializes the default click upgrades on first launch
+    private func initializeClickUpgrades() {
+        // Only initialize if click upgrades are empty (first launch)
+        guard clickUpgrades.isEmpty else { return }
+
+        clickUpgrades = [
+            ClickUpgrade(
+                name: "Titanium Finger",
+                level: 0, // Locked
+                baseCost: 50,
+                baseMultiplier: 1,
+                iconName: "hand.tap.fill"
+            ),
+            ClickUpgrade(
+                name: "Laser Pointer",
+                level: 0, // Locked
+                baseCost: 500,
+                baseMultiplier: 5,
+                iconName: "flashlight.on.fill"
+            ),
+            ClickUpgrade(
+                name: "Quantum Clicker",
+                level: 0, // Locked
+                baseCost: 5000,
+                baseMultiplier: 25,
+                iconName: "waveform.path"
+            ),
+            ClickUpgrade(
+                name: "Neural Amplifier",
+                level: 0, // Locked
+                baseCost: 50000,
+                baseMultiplier: 100,
+                iconName: "brain.head.profile"
+            ),
+            ClickUpgrade(
+                name: "Reality Bender",
+                level: 0, // Locked
+                baseCost: 500000,
+                baseMultiplier: 500,
+                iconName: "sparkles"
+            )
+        ]
+
+        // Save initial state
+        saveGame()
+    }
+
+    /// Calculates total credits per tap from all upgrades
+    private func calculateCreditsPerTap() {
+        // Base tap value is 1.0
+        var total = 1.0
+
+        // Add multipliers from all unlocked click upgrades
+        for upgrade in clickUpgrades {
+            total += upgrade.currentMultiplier
+        }
+
+        creditsPerTap = total
+    }
+
     /// Starts the production timer that generates credits every second
     private func startProduction() {
         timer = Timer.publish(every: 1.0, on: .main, in: .common)
@@ -156,6 +236,49 @@ class GameViewModel: ObservableObject {
         saveGame()
     }
 
+    /// Handles a manual tap/click on the tap button
+    func handleTap() {
+        // Add credits based on current tap multiplier
+        credits += creditsPerTap
+
+        // Increment tap counter
+        totalTaps += 1
+
+        // Add haptic feedback
+        let impact = UIImpactFeedbackGenerator(style: .light)
+        impact.impactOccurred()
+    }
+
+    /// Levels up a click upgrade if the player has enough credits
+    /// - Parameter upgradeID: The UUID of the click upgrade to level up
+    func levelUpClickUpgrade(upgradeID: UUID) {
+        guard let index = clickUpgrades.firstIndex(where: { $0.id == upgradeID }) else {
+            return
+        }
+
+        let upgrade = clickUpgrades[index]
+        let cost = upgrade.nextLevelCost
+
+        // Check if player has enough credits
+        guard credits >= cost else {
+            return
+        }
+
+        // Deduct cost and level up
+        credits -= cost
+        clickUpgrades[index].level += 1
+
+        // Recalculate credits per tap
+        calculateCreditsPerTap()
+
+        // Add haptic feedback
+        let impact = UIImpactFeedbackGenerator(style: .medium)
+        impact.impactOccurred()
+
+        // Save game state
+        saveGame()
+    }
+
     // MARK: - Persistence Functions
 
     /// Saves the current game state to UserDefaults
@@ -163,12 +286,24 @@ class GameViewModel: ObservableObject {
         // Save credits
         userDefaults.set(credits, forKey: creditsKey)
 
+        // Save tap statistics
+        userDefaults.set(creditsPerTap, forKey: creditsPerTapKey)
+        userDefaults.set(totalTaps, forKey: totalTapsKey)
+
         // Encode and save generators
         do {
             let encodedData = try JSONEncoder().encode(generators)
             userDefaults.set(encodedData, forKey: generatorsKey)
         } catch {
             print("Error encoding generators: \(error)")
+        }
+
+        // Encode and save click upgrades
+        do {
+            let encodedData = try JSONEncoder().encode(clickUpgrades)
+            userDefaults.set(encodedData, forKey: clickUpgradesKey)
+        } catch {
+            print("Error encoding click upgrades: \(error)")
         }
 
         // Save current timestamp
@@ -180,6 +315,13 @@ class GameViewModel: ObservableObject {
         // Load credits
         credits = userDefaults.double(forKey: creditsKey)
 
+        // Load tap statistics
+        creditsPerTap = userDefaults.double(forKey: creditsPerTapKey)
+        if creditsPerTap == 0.0 {
+            creditsPerTap = 1.0 // Default value on first launch
+        }
+        totalTaps = userDefaults.integer(forKey: totalTapsKey)
+
         // Load and decode generators
         if let savedData = userDefaults.data(forKey: generatorsKey) {
             do {
@@ -187,6 +329,16 @@ class GameViewModel: ObservableObject {
             } catch {
                 print("Error decoding generators: \(error)")
                 generators = []
+            }
+        }
+
+        // Load and decode click upgrades
+        if let savedData = userDefaults.data(forKey: clickUpgradesKey) {
+            do {
+                clickUpgrades = try JSONDecoder().decode([ClickUpgrade].self, from: savedData)
+            } catch {
+                print("Error decoding click upgrades: \(error)")
+                clickUpgrades = []
             }
         }
     }

@@ -14,14 +14,57 @@ struct GameView: View {
             // Header Section
             headerView
 
-            // Generators List
+            // Tap Button
+            TapButton(viewModel: viewModel)
+                .frame(height: 280)
+                .background(Color.black)
+
+            // Scrollable Content (Click Upgrades & Generators)
             ScrollView {
-                LazyVStack(spacing: 12) {
-                    ForEach(viewModel.generators) { generator in
-                        GeneratorRowView(generator: generator, viewModel: viewModel)
+                LazyVStack(spacing: 16) {
+                    // Click Multiplier Upgrades Section
+                    if !viewModel.clickUpgrades.isEmpty {
+                        VStack(alignment: .leading, spacing: 12) {
+                            // Section Header
+                            HStack {
+                                Image(systemName: "hand.tap.fill")
+                                    .foregroundColor(.yellow)
+                                Text("Click Multipliers")
+                                    .font(.title3.bold())
+                                    .foregroundColor(.white)
+                            }
+                            .padding(.horizontal)
+
+                            // Click Upgrades List
+                            ForEach(viewModel.clickUpgrades) { upgrade in
+                                ClickUpgradeRowView(upgrade: upgrade, viewModel: viewModel)
+                                    .padding(.horizontal)
+                            }
+                        }
+                        .padding(.top)
                     }
+
+                    // Generators Section
+                    VStack(alignment: .leading, spacing: 12) {
+                        // Section Header
+                        HStack {
+                            Image(systemName: "gear")
+                                .foregroundColor(.cyan)
+                            Text("Generators")
+                                .font(.title3.bold())
+                                .foregroundColor(.white)
+                        }
+                        .padding(.horizontal)
+
+                        // Generators List
+                        ForEach(viewModel.generators) { generator in
+                            GeneratorRowView(generator: generator, viewModel: viewModel)
+                                .padding(.horizontal)
+                        }
+                    }
+                    .padding(.top)
                 }
-                .padding()
+                .padding(.bottom)
             }
         }
         .background(Color.black)
