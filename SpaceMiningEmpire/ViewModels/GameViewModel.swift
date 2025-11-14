@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import UIKit
+import SwiftUI
 
 /// Data point for production history chart
 struct ProductionDataPoint: Codable, Identifiable {
@@ -102,6 +103,13 @@ class GameViewModel: ObservableObject {
 
     /// Daily activity data (date: day identifier, taps: tap count)
     @Published var dailyActivity: [DailyActivityData] = []
+
+    /// Settings reference for preferences
+    var settings = Settings.shared
+
+    /// Notification badges for affordability
+    @Published var affordableGeneratorIDs: Set<UUID> = []
+    @Published var affordableUpgradeIDs: Set<UUID> = []
 
     // MARK: - Private Properties
 
@@ -437,6 +445,12 @@ class GameViewModel: ObservableObject {
         // Track total credits earned
         totalCreditsEarned += totalProductionPerSecond
 
+        // Update affordability tracking
+        updateAffordability()
+
+        // Perform auto-buy if enabled
+        performAutoBuy()
+
         // Check achievements
         checkAndUnlockAchievements()
     }
@@ -486,12 +500,94 @@ class GameViewModel: ObservableObject {
         // Track upgrade purchase
         totalUpgradesPurchased += 1
 
-        // Add haptic feedback
-        let impact = UIImpactFeedbackGenerator(style: .medium)
-        impact.impactOccurred()
+        // Add haptic feedback if enabled
+        if settings.hapticFeedbackEnabled {
+            let impact = UIImpactFeedbackGenerator(style: .medium)
+            impact.impactOccurred()
+        }
 
         // Save game state
         saveGame()
+    }
+
+    /// Buys a specific quantity of a generator
+    /// - Parameters:
+    ///   - generatorID: The UUID of the generator
+    ///   - quantity: Number of levels to buy
+    func buyGenerator(generatorID: UUID, quantity: Int) {
+        guard let index = generators.firstIndex(where: { $0.id == generatorID }) else {
+            return
+        }
+
+        var generator = generators[index]
+        var totalCost = 0.0
+        var levelsPurchased = 0
+
+        // Calculate total cost for buying quantity levels
+        for i in 0..<quantity {
+            let nextCost = generator.baseCost * pow(1.15, Double(generator.level + i))
+            if credits >= totalCost + nextCost {
+                totalCost += nextCost
+                levelsPurchased += 1
+            } else {
+                break
+            }
+        }
+
+        // If we can't buy any, return
+        guard levelsPurchased > 0 else { return }
+
+        // Deduct cost and add levels
+        credits -= totalCost
+        generators[index].level += levelsPurchased
+
+        // Track upgrades purchased
+        totalUpgradesPurchased += levelsPurchased
+
+        // Add haptic feedback if enabled
+        if settings.hapticFeedbackEnabled {
+            let impact = UIImpactFeedbackGenerator(style: .medium)
+            impact.impactOccurred()
+        }
+
+        // Save game state
+        saveGame()
+    }
+
+    /// Calculates the maximum number of levels that can be purchased for a generator
+    /// - Parameter generatorID: The UUID of the generator
+    /// - Returns: Maximum affordable levels
+    func maxAffordableLevels(for generatorID: UUID) -> Int {
+        guard let generator = generators.first(where: { $0.id == generatorID }) else {
+            return 0
+        }
+
+        var currentCredits = credits
+        var levels = 0
+        var currentLevel = generator.level
+
+        // Keep buying while we have credits
+        while levels < 1000 { // Cap at 1000 to prevent infinite loops
+            let nextCost = generator.baseCost * pow(1.15, Double(currentLevel))
+            if currentCredits >= nextCost {
+                currentCredits -= nextCost
+                currentLevel += 1
+                levels += 1
+            } else {
+                break
+            }
+        }
+
+        return levels
+    }
+
+    /// Buys the maximum affordable levels for a generator
+    /// - Parameter generatorID: The UUID of the generator
+    func buyMaxGenerator(generatorID: UUID) {
+        let maxLevels = maxAffordableLevels(for: generatorID)
+        if maxLevels > 0 {
+            buyGenerator(generatorID: generatorID, quantity: maxLevels)
+        }
     }
 
     /// Handles a manual tap/click on the tap button
@@ -509,9 +605,11 @@ class GameViewModel: ObservableObject {
         totalTaps += 1
         sessionTaps += 1
 
-        // Add haptic feedback
-        let impact = UIImpactFeedbackGenerator(style: .light)
-        impact.impactOccurred()
+        // Add haptic feedback if enabled
+        if settings.hapticFeedbackEnabled {
+            let impact = UIImpactFeedbackGenerator(style: .light)
+            impact.impactOccurred()
+        }
 
         // Check achievements
         checkAndUnlockAchievements()
@@ -542,9 +640,11 @@ class GameViewModel: ObservableObject {
         // Recalculate credits per tap
         calculateCreditsPerTap()
 
-        // Add haptic feedback
-        let impact = UIImpactFeedbackGenerator(style: .medium)
-        impact.impactOccurred()
+        // Add haptic feedback if enabled
+        if settings.hapticFeedbackEnabled {
+            let impact = UIImpactFeedbackGenerator(style: .medium)
+            impact.impactOccurred()
+        }
 
         // Save game state
         saveGame()
@@ -585,9 +685,11 @@ class GameViewModel: ObservableObject {
         // Keep totalCreditsEarned so player can prestige again
         // (Don't reset this - it's cumulative across prestiges)
 
-        // Add strong haptic feedback for prestige
-        let impact = UIImpactFeedbackGenerator(style: .heavy)
-        impact.impactOccurred()
+        // Add strong haptic feedback for prestige if enabled
+        if settings.hapticFeedbackEnabled {
+            let impact = UIImpactFeedbackGenerator(style: .heavy)
+            impact.impactOccurred()
+        }
 
         // Save the new game state
         saveGame()
@@ -613,12 +715,58 @@ class GameViewModel: ObservableObject {
         if !newlyUnlocked.isEmpty {
             recentlyUnlockedAchievements.append(contentsOf: newlyUnlocked)
 
-            // Add haptic feedback for achievement unlock
-            let impact = UIImpactFeedbackGenerator(style: .medium)
-            impact.impactOccurred()
+            // Add haptic feedback for achievement unlock if enabled
+            if settings.hapticFeedbackEnabled {
+                let impact = UIImpactFeedbackGenerator(style: .medium)
+                impact.impactOccurred()
+            }
 
             // Save the updated achievement state
             saveGame()
+        }
+    }
+
+    // MARK: - Auto-Buy & Affordability Functions
+
+    /// Updates the affordability tracking for generators and upgrades
+    private func updateAffordability() {
+        guard settings.affordabilityNotificationsEnabled else {
+            affordableGeneratorIDs.removeAll()
+            affordableUpgradeIDs.removeAll()
+            return
+        }
+
+        // Track affordable generators
+        var newAffordableGenerators = Set<UUID>()
+        for generator in generators {
+            if credits >= generator.nextLevelCost {
+                newAffordableGenerators.insert(generator.id)
+            }
+        }
+        affordableGeneratorIDs = newAffordableGenerators
+
+        // Track affordable upgrades
+        var newAffordableUpgrades = Set<UUID>()
+        for upgrade in clickUpgrades {
+            if credits >= upgrade.nextLevelCost {
+                newAffordableUpgrades.insert(upgrade.id)
+            }
+        }
+        affordableUpgradeIDs = newAffordableUpgrades
+    }
+
+    /// Performs auto-buy for generators that have auto-buy enabled
+    private func performAutoBuy() {
+        guard settings.autoBuyEnabled else { return }
+
+        for generator in generators {
+            // Check if auto-buy is enabled for this generator
+            guard settings.isAutoBuyEnabled(for: generator.id.uuidString) else { continue }
+
+            // Try to buy if affordable
+            if credits >= generator.nextLevelCost {
+                levelUp(generatorID: generator.id)
+            }
         }
     }
 

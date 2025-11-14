@@ -10,8 +10,26 @@ struct GeneratorRowView: View {
     @State private var isPulsing = false
     @State private var celebrationTriggered = false
     @State private var iconRotation: Double = 0
+    @State private var purchaseMode: PurchaseMode = .x1
+    @State private var showPurchaseOptions = false
+
+    enum PurchaseMode: String, CaseIterable {
+        case x1 = "x1"
+        case x10 = "x10"
+        case x100 = "x100"
+        case max = "Max"
+    }
 
     private var isAffordable: Bool {
+        switch purchaseMode {
+        case .x1:
+            return viewModel.credits >= generator.nextLevelCost
+        case .x10, .x100, .max:
+            return canBuyAny
+        }
+    }
+
+    private var canBuyAny: Bool {
         viewModel.credits >= generator.nextLevelCost
     }
 
@@ -40,6 +58,14 @@ struct GeneratorRowView: View {
                                 .blur(radius: 8)
                                 .scaleEffect(isPulsing ? 1.2 : 1.0)
                                 .opacity(isPulsing ? 0.8 : 0.5)
+                        }
+
+                        // Auto-buy indicator
+                        if viewModel.settings.isAutoBuyEnabled(for: generator.id.uuidString) {
+                            Circle()
+                                .fill(Color.green)
+                                .frame(width: 8, height: 8)
+                                .offset(x: 16, y: -16)
                         }
 
                         Image(systemName: generator.iconName)
@@ -77,33 +103,62 @@ struct GeneratorRowView: View {
 
                 Spacer()
 
-                // Right: Level Up Button
-                levelUpButton
+                // Right: Purchase controls
+                VStack(spacing: 6) {
+                    // Purchase mode picker
+                    Picker("Mode", selection: $purchaseMode) {
+                        ForEach(PurchaseMode.allCases, id: \.self) { mode in
+                            Text(mode.rawValue).tag(mode)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: 160)
+
+                    // Buy button
+                    levelUpButton
+                }
             }
 
-            // Progress bar (shows when generator is unlocked)
-            if generator.level > 0 {
-                GeometryReader { geometry in
-                    ZStack(alignment: .leading) {
-                        // Background
-                        RoundedRectangle(cornerRadius: 2)
-                            .fill(Color.gray.opacity(0.3))
-                            .frame(height: 4)
-
-                        // Progress fill
-                        RoundedRectangle(cornerRadius: 2)
-                            .fill(
-                                LinearGradient(
-                                    colors: [.cyan, .blue],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .frame(width: geometry.size.width * progressToNextLevel, height: 4)
-                            .animation(.easeOut(duration: 0.3), value: progressToNextLevel)
+            // Auto-buy toggle and Progress bar row
+            HStack(spacing: 12) {
+                // Auto-buy toggle
+                if generator.level > 0 {
+                    Toggle(isOn: Binding(
+                        get: { viewModel.settings.isAutoBuyEnabled(for: generator.id.uuidString) },
+                        set: { viewModel.settings.setAutoBuy(for: generator.id.uuidString, enabled: $0) }
+                    )) {
+                        Label("Auto", systemImage: "bolt.fill")
+                            .font(.caption)
                     }
+                    .toggleStyle(.button)
+                    .tint(.green)
+                    .controlSize(.mini)
                 }
-                .frame(height: 4)
+
+                // Progress bar (shows when generator is unlocked)
+                if generator.level > 0 {
+                    GeometryReader { geometry in
+                        ZStack(alignment: .leading) {
+                            // Background
+                            RoundedRectangle(cornerRadius: 2)
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(height: 4)
+
+                            // Progress fill
+                            RoundedRectangle(cornerRadius: 2)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [.cyan, .blue],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .frame(width: geometry.size.width * progressToNextLevel, height: 4)
+                                .animation(.easeOut(duration: 0.3), value: progressToNextLevel)
+                        }
+                    }
+                    .frame(height: 4)
+                }
             }
         }
         .padding()
@@ -131,13 +186,13 @@ struct GeneratorRowView: View {
     /// Button to unlock or upgrade the generator
     private var levelUpButton: some View {
         Button(action: {
-            viewModel.levelUp(generatorID: generator.id)
+            performPurchase()
             triggerCelebration()
         }) {
             VStack(spacing: 2) {
-                Text(generator.level == 0 ? "UNLOCK" : "UPGRADE")
+                Text(purchaseButtonLabel)
                     .font(.caption.bold())
-                Text(generator.nextLevelCost.formattedCredits)
+                Text(purchaseCost)
                     .font(.caption2)
             }
             .foregroundColor(.white)
@@ -160,6 +215,57 @@ struct GeneratorRowView: View {
             .shadow(color: isAffordable ? .cyan.opacity(0.5) : .clear, radius: isPulsing ? 8 : 0)
         }
         .disabled(!isAffordable)
+    }
+
+    private var purchaseButtonLabel: String {
+        if generator.level == 0 {
+            return "UNLOCK"
+        }
+        switch purchaseMode {
+        case .x1:
+            return "BUY"
+        case .x10:
+            return "BUY x10"
+        case .x100:
+            return "BUY x100"
+        case .max:
+            return "BUY MAX"
+        }
+    }
+
+    private var purchaseCost: String {
+        switch purchaseMode {
+        case .x1:
+            return generator.nextLevelCost.formattedCredits
+        case .x10, .x100:
+            let quantity = purchaseMode == .x10 ? 10 : 100
+            let cost = calculateBulkCost(quantity: quantity)
+            return cost.formattedCredits
+        case .max:
+            let maxLevels = viewModel.maxAffordableLevels(for: generator.id)
+            return maxLevels > 0 ? "x\(maxLevels)" : generator.nextLevelCost.formattedCredits
+        }
+    }
+
+    private func calculateBulkCost(quantity: Int) -> Double {
+        var totalCost = 0.0
+        for i in 0..<quantity {
+            totalCost += generator.baseCost * pow(1.15, Double(generator.level + i))
+        }
+        return totalCost
+    }
+
+    private func performPurchase() {
+        switch purchaseMode {
+        case .x1:
+            viewModel.levelUp(generatorID: generator.id)
+        case .x10:
+            viewModel.buyGenerator(generatorID: generator.id, quantity: 10)
+        case .x100:
+            viewModel.buyGenerator(generatorID: generator.id, quantity: 100)
+        case .max:
+            viewModel.buyMaxGenerator(generatorID: generator.id)
+        }
     }
 
     // MARK: - Helpers
