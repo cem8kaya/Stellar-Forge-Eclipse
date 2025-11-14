@@ -95,6 +95,14 @@ struct GameView: View {
                 }
             )
         }
+        .sheet(isPresented: $viewModel.isShowingAchievementsModal) {
+            AchievementsView(
+                viewModel: viewModel,
+                onDismiss: {
+                    viewModel.isShowingAchievementsModal = false
+                }
+            )
+        }
     }
 
     // MARK: - Subviews
@@ -102,8 +110,29 @@ struct GameView: View {
     /// Header displaying app title, credits, and production rate
     private var headerView: some View {
         VStack(spacing: 12) {
-            // Title with space theme icon and prestige button
-            HStack {
+            // Title with space theme icon and action buttons
+            HStack(spacing: 12) {
+                // Achievements button
+                Button(action: {
+                    viewModel.isShowingAchievementsModal = true
+                }) {
+                    ZStack {
+                        Image(systemName: "trophy.fill")
+                            .font(.title3)
+                            .foregroundColor(.yellow)
+
+                        // Badge showing unlocked count
+                        if viewModel.achievementManager.unlockedCount > 0 {
+                            Text("\(viewModel.achievementManager.unlockedCount)")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundColor(.white)
+                                .padding(4)
+                                .background(Circle().fill(Color.red))
+                                .offset(x: 12, y: -10)
+                        }
+                    }
+                }
+
                 Image(systemName: "star.fill")
                     .foregroundColor(.yellow)
                 Text("Space Mining Empire")
@@ -157,21 +186,44 @@ struct GameView: View {
                     .foregroundColor(.green)
             }
 
-            // Prestige multiplier (shows if player has any shards)
-            if viewModel.stellarShards > 0 {
+            // Multipliers (shows if player has any bonuses)
+            if viewModel.stellarShards > 0 || viewModel.achievementManager.unlockedCount > 0 {
                 HStack(spacing: 4) {
-                    Image(systemName: "diamond.fill")
-                        .foregroundColor(.cyan)
-                    Text("\(viewModel.stellarShards) Stellar Shards")
-                        .font(.caption)
-                        .foregroundColor(.cyan)
-                    Text("•")
-                        .foregroundColor(.secondary)
-                    Image(systemName: "sparkles")
-                        .foregroundColor(.purple)
-                    Text("\(viewModel.prestigeMultiplier, specifier: "%.1f")x multiplier")
-                        .font(.caption)
-                        .foregroundColor(.purple)
+                    // Prestige multiplier
+                    if viewModel.stellarShards > 0 {
+                        Image(systemName: "diamond.fill")
+                            .foregroundColor(.cyan)
+                        Text("\(viewModel.stellarShards) Shards")
+                            .font(.caption)
+                            .foregroundColor(.cyan)
+                        Text("•")
+                            .foregroundColor(.secondary)
+                        Image(systemName: "sparkles")
+                            .foregroundColor(.purple)
+                        Text("\(viewModel.prestigeMultiplier, specifier: "%.1f")x")
+                            .font(.caption)
+                            .foregroundColor(.purple)
+                    }
+
+                    // Achievement multiplier
+                    if viewModel.achievementManager.unlockedCount > 0 {
+                        if viewModel.stellarShards > 0 {
+                            Text("•")
+                                .foregroundColor(.secondary)
+                        }
+                        Image(systemName: "trophy.fill")
+                            .foregroundColor(.yellow)
+                        Text("\(viewModel.achievementManager.unlockedCount) Achievements")
+                            .font(.caption)
+                            .foregroundColor(.yellow)
+                        Text("•")
+                            .foregroundColor(.secondary)
+                        Image(systemName: "star.fill")
+                            .foregroundColor(.yellow)
+                        Text("\(viewModel.achievementMultiplier, specifier: "%.2f")x")
+                            .font(.caption)
+                            .foregroundColor(.yellow)
+                    }
                 }
             }
         }
