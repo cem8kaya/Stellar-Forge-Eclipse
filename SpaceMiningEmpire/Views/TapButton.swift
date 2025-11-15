@@ -157,6 +157,6 @@ struct TapButton: View {
 
 #Preview {
     let viewModel = GameViewModel()
-    return TapButton(viewModel: viewModel)
+    TapButton(viewModel: viewModel)
         .background(Color.black)
 }

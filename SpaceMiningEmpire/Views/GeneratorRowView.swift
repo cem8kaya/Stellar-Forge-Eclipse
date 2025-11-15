@@ -295,7 +295,7 @@ struct GeneratorRowView: View {
 
 #Preview {
     let viewModel = GameViewModel()
-    return GeneratorRowView(
+    GeneratorRowView(
         generator: Generator(
             name: "Mining Probe",
             level: 1,
