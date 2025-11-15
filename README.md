@@ -205,8 +205,8 @@ This repository includes a ready-to-use **Xcode project file** (`SpaceMiningEmpi
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/cem8kaya/Stellar-Forge-Eclipse.git
-   cd Stellar-Forge-Eclipse
+   git clone https://github.com/cem8kaya/SpaceMiningEmpire.git
+   cd SpaceMiningEmpire
    ```
 
 2. **Open in Xcode**:
@@ -264,7 +264,7 @@ The included Xcode project is pre-configured with:
 ## Project Structure
 
 ```
-Stellar-Forge-Eclipse/
+SpaceMiningEmpire/
 ├── README.md                          # This file
 ├── LICENSE                            # MIT License
 ├── SpaceMiningEmpire.xcodeproj/       # Xcode project (ready to open!)
@@ -713,7 +713,7 @@ This is an open-source educational project. Feel free to:
 
 For questions, issues, or suggestions:
 
-- **GitHub Repository**: [Stellar-Forge-Eclipse](https://github.com/cem8kaya/Stellar-Forge-Eclipse)
+- **GitHub Repository**: [SpaceMiningEmpire](https://github.com/cem8kaya/SpaceMiningEmpire)
 - **Issues**: Use GitHub Issues for bug reports and feature requests
 
 ---
