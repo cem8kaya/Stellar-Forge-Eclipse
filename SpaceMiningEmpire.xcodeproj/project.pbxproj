@@ -30,11 +30,15 @@
 		AB779AC7639F000000000028 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D563BA970EA4000000000029 /* StatsView.swift */; };
 		4188B7E60CBD00000000002A /* TapButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E4B7F9E12E00000000002B /* TapButton.swift */; };
 		9FC9D4C51B8000000000002C /* TutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F01EC8C28800000000002D /* TutorialView.swift */; };
+		ASSETS_BUILD_FILE_000000 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ASSETS_CATALOG_REF_000000 /* Assets.xcassets */; };
+		PREVIEW_BUILD_FILE_000001 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = PREVIEW_CONTENT_REF_000001 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		B7B7E2C301FF00000000002E /* SpaceMiningEmpire.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpaceMiningEmpire.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC62394073D3000000000001 /* Achievement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievement.swift; sourceTree = "<group>"; };
+		ASSETS_CATALOG_REF_000000 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		PREVIEW_CONTENT_REF_000001 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		ECE6D3D8C957000000000003 /* AchievementManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementManager.swift; sourceTree = "<group>"; };
 		5070C319CC8F000000000005 /* ClickUpgrade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickUpgrade.swift; sourceTree = "<group>"; };
 		1D23C9C618DF000000000007 /* Generator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Generator.swift; sourceTree = "<group>"; };
@@ -94,8 +98,18 @@
 				1B09ED8E8306000000000034 /* Utilities */,
 				232D8617D20F000000000035 /* ViewModels */,
 				D5E1531DEF4C000000000036 /* Views */,
+				ASSETS_CATALOG_REF_000000 /* Assets.xcassets */,
+				PREVIEW_CONTENT_GROUP_000 /* Preview Content */,
 			);
 			path = SpaceMiningEmpire;
+			sourceTree = "<group>";
+		};
+		PREVIEW_CONTENT_GROUP_000 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				PREVIEW_CONTENT_REF_000001 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		4EA02D33814D000000000033 /* Models */ = {
@@ -206,6 +220,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ASSETS_BUILD_FILE_000000 /* Assets.xcassets in Resources */,
+				PREVIEW_BUILD_FILE_000001 /* Preview Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
