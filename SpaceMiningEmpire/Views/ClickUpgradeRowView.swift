@@ -154,7 +154,7 @@ struct ClickUpgradeRowView: View {
 
 #Preview {
     let viewModel = GameViewModel()
-    return ClickUpgradeRowView(
+    ClickUpgradeRowView(
         upgrade: ClickUpgrade(
             name: "Titanium Finger",
             level: 1,
